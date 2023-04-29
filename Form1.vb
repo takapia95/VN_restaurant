@@ -1,3 +1,4 @@
+'Restaurant Order app
 Public Class Form1
     Const _decBmi As Decimal = 10D
     Const _decGcuon As Decimal = 10D
@@ -11,75 +12,60 @@ Public Class Form1
     Const _decTea As Decimal = 4D
     Const _decBoba As Decimal = 4.5D
     Const _decCpsd As Decimal = 5D
-
-
-    Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboTip.SelectedIndexChanged
-        Dim total As Decimal
-        Dim decPrice As Decimal
-
-        If cboTip.SelectedIndex = 0 Then
-            decPrice = Convert.ToDecimal(txtPrice.Text)
-            total = decPrice + (decPrice * 0.05D)
-        ElseIf cboTip.SelectedIndex = 1 Then
-            decPrice = Convert.ToDecimal(txtPrice.Text)
-            total = decPrice + (decPrice * 0.1D)
-        ElseIf cboTip.SelectedIndex = 2 Then
-            decPrice = Convert.ToDecimal(txtPrice.Text)
-            total = decPrice + (decPrice * 0.15D)
-        ElseIf cboTip.SelectedIndex = 3 Then
-            decPrice = Convert.ToDecimal(txtPrice.Text)
-            total = decPrice + (decPrice * 0.2D)
-        ElseIf cboTip.SelectedIndex = 4 Then
-            decPrice = Convert.ToDecimal(txtPrice.Text)
-            total = decPrice + (decPrice * 0.25D)
-        ElseIf cboTip.SelectedIndex = 5 Then
-            decPrice = Convert.ToDecimal(txtPrice.Text)
-            total = decPrice + (decPrice * 0.5D)
-        ElseIf cboTip.SelectedIndex = 6 Then
-            decPrice = Convert.ToDecimal(txtPrice.Text)
-            total = decPrice + decPrice
-        End If
-        txtTotal.Text = total.ToString("F2")
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        txtBmi.Visible = False
+        txtBbao.Visible = False
+        txtBcha.Visible = False
+        txtBoba.Visible = False
+        txtPho.Visible = False
+        txtBxeo.Visible = False
+        txtGcuon.Visible = False
+        txtSprite.Visible = False
+        txtJuice.Visible = False
+        txtTea.Visible = False
+        txtCPSD.Visible = False
+        txtCoke.Visible = False
     End Sub
 
     Private Function ValidateInput() As Boolean
-        'validate Input
-        Dim intNumber As Integer
+        'validate Input of Parking Fee
+        Dim decNumber As Decimal
         Dim blnValid As Boolean = False
-        Try
-            'convert to an integer value
-            intNumber = Convert.ToInt32(txtPark.Text)
-            If intNumber > 0D Then
-                blnValid = True
-                Return blnValid
-            Else
-                MsgBox("Please enter a number greater than 0", , "Error")
-            End If
+        If IsNumeric(txtPark.Text) Then
+            decNumber = Convert.ToDecimal(txtPark.Text)
+            Try
+                If decNumber > 0D Then
+                    blnValid = True
+                    Return blnValid
+                Else
+                    MsgBox("Please enter a number greater than 0", , "Error")
+                End If
 
-        Catch Exception As FormatException
-            'case of symbols, letters,...
-            MsgBox("Please enter a valid amount", , "Error")
-        Catch Exception As SystemException
-            'case of the rest
-            MsgBox("Entry invalid. Please enter a number", , "Error")
+            Catch Exception As FormatException
+                'case of symbols, letters,...
+                MsgBox("Please enter a valid amount", , "Error")
+            Catch Exception As SystemException
+                'case of the rest
+                MsgBox("Entry invalid. Please enter a number", , "Error")
 
-        End Try
+            End Try
+        End If
         txtPark.Focus()
         txtPark.Clear()
         Return blnValid
     End Function
-    Private Sub TextBox2_TextChanged(sender As Object, e As EventArgs) Handles txtPark.TextChanged
+    Private Sub btnFee_Click(sender As Object, e As EventArgs) Handles btnFee.Click
         Dim intQuarter As Integer = 0
         Dim intTime As Integer = 15
         Dim intParkingTime As Integer
-        Dim intAmount As Decimal
+        Dim decAmount As Decimal
         Dim blnAmountIsValid As Boolean = False
         blnAmountIsValid = ValidateInput()
         If blnAmountIsValid = True Then
-            intAmount = Convert.ToInt32(txtPark.Text)
-            Do Until intAmount = 0
+            decAmount = Convert.ToDecimal(txtPark.Text)
+            Do Until decAmount < 0.25
                 intQuarter += 1
-                intAmount -= 1
+                decAmount -= 0.25
             Loop
         End If
         intParkingTime = intQuarter * intTime
@@ -94,26 +80,29 @@ Public Class Form1
         If IsNumeric(cash) Then
             cash = Convert.ToDecimal(cash)
             If cboPayment.SelectedIndex = 0 Then
-                total = Convert.ToDecimal(txtTotal.Text)
+                total = Convert.ToDecimal(lblTotalPrice.Text)
                 cash = InputBox("Enter Cash")
                 change = cash - total
+                If change >= 0 Then
 
-
-                MsgBox("Change is " & change.ToString("C"))
-            End If
-            If cboPayment.SelectedIndex = 1 Or cboPayment.SelectedIndex = 2 Then
-                MsgBox("Thank you for your payment")
+                    MsgBox("Change is " & change.ToString("C"))
+                Else
+                    MsgBox("Need more Cash")
+                End If
+                If cboPayment.SelectedIndex = 1 Or cboPayment.SelectedIndex = 2 Then
+                    MsgBox("Thank you for your payment")
+                End If
             End If
         Else
             MsgBox("Enter a number")
         End If
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles btnConfirm.Click
+    Private Sub btnConfirm_Click(sender As Object, e As EventArgs) Handles btnConfirm.Click
         Dim name As String
         Dim total As String
         name = Convert.ToString(txtName.Text)
-        total = Convert.ToString(txtTotal.Text)
+        total = Convert.ToString(lblTotalPrice.Text)
         MsgBox("Thank you " & name & " for choosing us, your order total is " & total)
     End Sub
 
@@ -151,17 +140,13 @@ Public Class Form1
         txtPark.Clear()
         txtPark.Focus()
         txtPrice.Clear()
-        txtTotal.Clear()
         lblParking.Text = ""
-        cboTip.SelectedIndex = -1
         cboPayment.SelectedIndex = -1
-
+        lblTotalPrice.Text = ""
 
     End Sub
 
-    Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
-        Close()
-    End Sub
+
     Private Sub btnCalculate_Click(sender As Object, e As EventArgs) Handles btnCalculate.Click
         Dim sum As Decimal
         Dim bmi As Integer
@@ -190,7 +175,7 @@ Public Class Form1
         If chbGcuon.Checked = True Then
             If IsNumeric(txtGcuon.Text) Then
                 gcuon = Convert.ToInt32(txtGcuon.Text)
-                sum += bmi * _decGcuon
+                sum += gcuon * _decGcuon
             Else
                 MsgBox("Enter a number of Goi Cuon")
             End If
@@ -299,6 +284,7 @@ Public Class Form1
             txtCPSD.Text = "0"
         End If
         txtPrice.Text = sum.ToString()
+
     End Sub
 
     Private Sub chbBmi_CheckedChanged(sender As Object, e As EventArgs) Handles chbBmi.CheckedChanged
@@ -383,19 +369,61 @@ Public Class Form1
             txtCPSD.Focus()
         End If
     End Sub
+    Private Sub rad5_CheckedChanged(sender As Object, e As EventArgs) Handles rad5.CheckedChanged
+        Dim total As Decimal
+        Dim decPrice As Decimal
 
-    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        txtBmi.Visible = False
-        txtBbao.Visible = False
-        txtBcha.Visible = False
-        txtBoba.Visible = False
-        txtPho.Visible = False
-        txtBxeo.Visible = False
-        txtGcuon.Visible = False
-        txtSprite.Visible = False
-        txtJuice.Visible = False
-        txtTea.Visible = False
-        txtCPSD.Visible = False
-        txtCoke.Visible = False
+        If rad5.Checked Then
+            decPrice = Convert.ToDecimal(txtPrice.Text)
+            total = decPrice + (decPrice * 0.05D)
+        End If
+        lblTotalPrice.Text = total.ToString("F2")
+    End Sub
+
+    Private Sub rad10_CheckedChanged(sender As Object, e As EventArgs) Handles rad10.CheckedChanged
+        Dim total As Decimal
+        Dim decPrice As Decimal
+
+        If rad10.Checked Then
+            decPrice = Convert.ToDecimal(txtPrice.Text)
+            total = decPrice + (decPrice * 0.1D)
+        End If
+        lblTotalPrice.Text = total.ToString("F2")
+    End Sub
+
+    Private Sub rad20_CheckedChanged(sender As Object, e As EventArgs) Handles rad20.CheckedChanged
+        Dim total As Decimal
+        Dim decPrice As Decimal
+
+        If rad20.Checked Then
+            decPrice = Convert.ToDecimal(txtPrice.Text)
+            total = decPrice + (decPrice * 0.2D)
+        End If
+        lblTotalPrice.Text = total.ToString("F2")
+    End Sub
+
+    Private Sub rad25_CheckedChanged(sender As Object, e As EventArgs) Handles rad25.CheckedChanged
+        Dim total As Decimal
+        Dim decPrice As Decimal
+
+        If rad25.Checked Then
+            decPrice = Convert.ToDecimal(txtPrice.Text)
+            total = decPrice + (decPrice * 0.25D)
+        End If
+        lblTotalPrice.Text = total.ToString("F2")
+    End Sub
+
+    Private Sub rad50_CheckedChanged(sender As Object, e As EventArgs) Handles rad50.CheckedChanged
+        Dim total As Decimal
+        Dim decPrice As Decimal
+
+        If rad50.Checked Then
+            decPrice = Convert.ToDecimal(txtPrice.Text)
+            total = decPrice + (decPrice * 0.5D)
+        End If
+        lblTotalPrice.Text = total.ToString("F2")
+    End Sub
+    Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
+        Close()
     End Sub
 End Class
